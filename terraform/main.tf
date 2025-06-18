@@ -13,11 +13,7 @@ provider "azurerm" {
   features {}
 }
 
-# Create a resource group (like a folder for our Azure resources)
-resource "azurerm_resource_group" "main" {
-  name     = "rg-devops-project"
-  location = var.location
-}
+
 
 # Create a virtual network (like a private internet for our VM)
 resource "azurerm_virtual_network" "main" {
