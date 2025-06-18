@@ -1,0 +1,46 @@
+---
+- name: Install and configure Apache web server
+  hosts: webservers
+  become: yes  # Run as administrator
+  vars:
+    document_root: /var/www/html
+
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Apache web server
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start and enable Apache service
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Remove default Apache page
+      file:
+        path: "{{ document_root }}/index.html"
+        state: absent
+
+    - name: Copy our website files
+      copy:
+        src: "../app/"
+        dest: "{{ document_root }}/"
+        mode: '0644'
+
+    - name: Set correct ownership for web files
+      file:
+        path: "{{ document_root }}"
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Restart Apache to apply changes
+      systemd:
+        name: apache2
+        state: restarted
